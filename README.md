@@ -7,7 +7,7 @@ Tap **Surprise me** and get a random workout with a name, focus, time, kit, diff
 ## Features
 
 - One prominent **Surprise me** / **Give me another** action
-- 38 seeded sessions: bodyweight, dumbbells, gym, cardio, HIIT, mobility and short hotel/home work
+- 39 seeded sessions: bodyweight, dumbbells, gym, cardio, HIIT, mobility and short hotel/home work
 - Filters for focus, duration, equipment and difficulty
 - Re-roll without losing filters
 - Local favourites (`localStorage`)

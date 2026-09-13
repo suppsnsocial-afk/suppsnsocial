@@ -9,6 +9,7 @@ import {
 
 export const FAVOURITES_KEY = "todays-session:favourites";
 export const FILTERS_KEY = "todays-session:filters";
+export const LAST_WORKOUT_KEY = "todays-session:last";
 export const STORAGE_EVENT = "todays-session:storage";
 
 function isOneOf<T extends string>(value: unknown, allowed: readonly T[]): value is T {
@@ -103,4 +104,27 @@ export function getFilterSnapshot(): WorkoutFilters {
 
 export function getFilterServerSnapshot(): WorkoutFilters {
   return EMPTY_FILTERS;
+}
+
+let lastWorkoutCache: string | null = "__unset__";
+
+export function getLastWorkoutSnapshot(): string | null {
+  const raw = window.localStorage.getItem(LAST_WORKOUT_KEY);
+  if (raw === lastWorkoutCache) return lastWorkoutCache;
+  lastWorkoutCache = raw;
+  return raw;
+}
+
+export function getLastWorkoutServerSnapshot(): string | null {
+  return null;
+}
+
+export function saveLastWorkoutId(id: string | null): void {
+  if (id) {
+    window.localStorage.setItem(LAST_WORKOUT_KEY, id);
+  } else {
+    window.localStorage.removeItem(LAST_WORKOUT_KEY);
+  }
+  lastWorkoutCache = id;
+  notifyStorage();
 }

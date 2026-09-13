@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { workouts } from "@/data/workouts";
 import { useFavourites } from "@/hooks/useFavourites";
 import { useFilters } from "@/hooks/useFilters";
+import { useLastWorkout } from "@/hooks/useLastWorkout";
 import { filterWorkouts, pickWorkout } from "@/lib/filters";
 import type { Workout } from "@/lib/types";
 import { AppHeader } from "./AppHeader";
@@ -13,7 +14,10 @@ import { WorkoutCard } from "./WorkoutCard";
 export function SessionApp() {
   const { filters, setFilters } = useFilters();
   const { toggle, isSaved, count } = useFavourites();
+  const { lastId, setLastId } = useLastWorkout();
+  const restored = workouts.find((item) => item.id === lastId) ?? null;
   const [workout, setWorkout] = useState<Workout | null>(null);
+  const shown = workout ?? restored;
   const [rolling, setRolling] = useState(false);
   const [empty, setEmpty] = useState(false);
 
@@ -30,6 +34,7 @@ export function SessionApp() {
     window.setTimeout(() => {
       const next = pickWorkout(workouts, filters, excludeId);
       setWorkout(next);
+      setLastId(next?.id ?? null);
       setEmpty(next === null);
       setRolling(false);
     }, 280);
@@ -51,11 +56,11 @@ export function SessionApp() {
 
         <button
           type="button"
-          onClick={() => roll(workout?.id)}
+          onClick={() => roll(shown?.id)}
           disabled={rolling}
           className="surprise-button min-h-[4.25rem] w-full rounded-[1.6rem] bg-lime px-5 text-lg font-extrabold tracking-tight text-lime-ink shadow-[0_12px_40px_rgba(200,245,66,0.22)] disabled:opacity-70"
         >
-          {rolling ? "Picking your session…" : workout ? "Give me another" : "Surprise me"}
+          {rolling ? "Picking your session…" : shown ? "Give me another" : "Surprise me"}
         </button>
 
         <FilterPanel filters={filters} matchCount={matchCount} onChange={setFilters} />
@@ -66,12 +71,12 @@ export function SessionApp() {
           </div>
         ) : null}
 
-        {workout ? (
+        {shown ? (
           <WorkoutCard
-            workout={workout}
-            saved={isSaved(workout.id)}
-            onToggleSave={() => toggle(workout.id)}
-            onReroll={() => roll(workout.id)}
+            workout={shown}
+            saved={isSaved(shown.id)}
+            onToggleSave={() => toggle(shown.id)}
+            onReroll={() => roll(shown.id)}
             rolling={rolling}
           />
         ) : (
