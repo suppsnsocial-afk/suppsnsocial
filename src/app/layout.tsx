@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     template: "%s · Today's Session",
   },
   description:
-    "Can't decide what to train? Today's Session from Supps n Social Ltd gives you a random workout with a clear method — then get moving.",
+    "Can't decide what to train or meal prep? Today's Session from Supps n Social Ltd gives you a random workout or meal with a clear method.",
   applicationName: "Today's Session",
   manifest: "/manifest.webmanifest",
   appleWebApp: {

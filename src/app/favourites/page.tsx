@@ -4,7 +4,7 @@ import { UnlockGate } from "@/components/UnlockGate";
 import { getUnlockConfig } from "@/lib/stripe-server";
 
 export const metadata: Metadata = {
-  title: "Saved sessions",
+  title: "Saved ideas",
 };
 
 export default function FavouritesPage() {

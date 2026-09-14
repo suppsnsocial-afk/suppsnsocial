@@ -43,6 +43,54 @@ export const EMPTY_FILTERS: WorkoutFilters = {
   difficulty: "any",
 };
 
+export const APP_MODES = ["workout", "meal"] as const;
+
+export type AppMode = (typeof APP_MODES)[number];
+
+export const MEAL_FOCUSES = [
+  "high-protein",
+  "batch-cook",
+  "quick",
+  "vegetarian",
+  "budget",
+  "recovery",
+] as const;
+
+export const MEAL_DIETS = ["omnivore", "vegetarian"] as const;
+
+export const MEAL_KITCHENS = ["minimal", "hob", "oven", "hob-and-oven", "blender"] as const;
+
+export type MealFocus = (typeof MEAL_FOCUSES)[number];
+export type MealDiet = (typeof MEAL_DIETS)[number];
+export type MealKitchen = (typeof MEAL_KITCHENS)[number];
+
+export type MealPrep = {
+  id: string;
+  name: string;
+  description: string;
+  focus: MealFocus;
+  diet: MealDiet;
+  durationMinutes: number;
+  servings: number;
+  equipment: MealKitchen;
+  difficulty: Difficulty;
+  steps: string[];
+};
+
+export type MealPrepFilters = {
+  focus: MealFocus | "any";
+  duration: DurationBand | "any";
+  diet: MealDiet | "any";
+  difficulty: Difficulty | "any";
+};
+
+export const EMPTY_MEAL_FILTERS: MealPrepFilters = {
+  focus: "any",
+  duration: "any",
+  diet: "any",
+  difficulty: "any",
+};
+
 export const FOCUS_LABELS: Record<Focus, string> = {
   "full-body": "Full body",
   legs: "Legs",
@@ -69,4 +117,26 @@ export const DURATION_LABELS: Record<DurationBand, string> = {
   "20-30": "20–30 mins",
   "30-45": "30–45 mins",
   "45-plus": "45 mins+",
+};
+
+export const MEAL_FOCUS_LABELS: Record<MealFocus, string> = {
+  "high-protein": "High protein",
+  "batch-cook": "Batch cook",
+  quick: "Quick",
+  vegetarian: "Vegetarian",
+  budget: "Budget",
+  recovery: "Recovery",
+};
+
+export const MEAL_DIET_LABELS: Record<MealDiet, string> = {
+  omnivore: "Meat & fish",
+  vegetarian: "Vegetarian",
+};
+
+export const MEAL_KITCHEN_LABELS: Record<MealKitchen, string> = {
+  minimal: "Minimal kit",
+  hob: "Hob",
+  oven: "Oven",
+  "hob-and-oven": "Hob + oven",
+  blender: "Blender",
 };

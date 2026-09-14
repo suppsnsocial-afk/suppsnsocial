@@ -25,7 +25,7 @@ export async function POST(request: Request) {
           unit_amount: UNLOCK_PRICE_PENCE,
           product_data: {
             name: "Today's Session unlock",
-            description: "One-time access to workout ideas for Supps n Social customers.",
+            description: "One-time access to workout and meal prep ideas for Supps n Social customers.",
           },
         },
       },

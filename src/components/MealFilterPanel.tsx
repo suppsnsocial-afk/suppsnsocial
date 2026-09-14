@@ -6,26 +6,26 @@ import {
   DIFFICULTY_LABELS,
   DURATION_BANDS,
   DURATION_LABELS,
-  EMPTY_FILTERS,
-  EQUIPMENT,
-  EQUIPMENT_LABELS,
-  FOCUSES,
-  FOCUS_LABELS,
+  EMPTY_MEAL_FILTERS,
+  MEAL_DIETS,
+  MEAL_DIET_LABELS,
+  MEAL_FOCUSES,
+  MEAL_FOCUS_LABELS,
   type Difficulty,
   type DurationBand,
-  type Equipment,
-  type Focus,
-  type WorkoutFilters,
+  type MealDiet,
+  type MealFocus,
+  type MealPrepFilters,
 } from "@/lib/types";
 import { ChipRow } from "./FilterChips";
 
-type FilterPanelProps = {
-  filters: WorkoutFilters;
+type MealFilterPanelProps = {
+  filters: MealPrepFilters;
   matchCount: number;
-  onChange: (filters: WorkoutFilters) => void;
+  onChange: (filters: MealPrepFilters) => void;
 };
 
-export function FilterPanel({ filters, matchCount, onChange }: FilterPanelProps) {
+export function MealFilterPanel({ filters, matchCount, onChange }: MealFilterPanelProps) {
   const active = hasActiveFilters(filters);
 
   return (
@@ -48,14 +48,14 @@ export function FilterPanel({ filters, matchCount, onChange }: FilterPanelProps)
       </summary>
       <div className="space-y-4 border-t border-line px-4 py-4">
         <ChipRow
-          label="Focus"
+          label="Type"
           value={filters.focus}
           onChange={(focus) => onChange({ ...filters, focus })}
           options={[
             { value: "any" as const, label: "Any" },
-            ...FOCUSES.map((focus) => ({
-              value: focus as Focus | "any",
-              label: FOCUS_LABELS[focus],
+            ...MEAL_FOCUSES.map((focus) => ({
+              value: focus as MealFocus | "any",
+              label: MEAL_FOCUS_LABELS[focus],
             })),
           ]}
         />
@@ -72,14 +72,14 @@ export function FilterPanel({ filters, matchCount, onChange }: FilterPanelProps)
           ]}
         />
         <ChipRow
-          label="Kit"
-          value={filters.equipment}
-          onChange={(equipment) => onChange({ ...filters, equipment })}
+          label="Diet"
+          value={filters.diet}
+          onChange={(diet) => onChange({ ...filters, diet })}
           options={[
             { value: "any" as const, label: "Any" },
-            ...EQUIPMENT.map((item) => ({
-              value: item as Equipment | "any",
-              label: EQUIPMENT_LABELS[item],
+            ...MEAL_DIETS.map((item) => ({
+              value: item as MealDiet | "any",
+              label: MEAL_DIET_LABELS[item],
             })),
           ]}
         />
@@ -98,7 +98,7 @@ export function FilterPanel({ filters, matchCount, onChange }: FilterPanelProps)
         {active ? (
           <button
             type="button"
-            onClick={() => onChange(EMPTY_FILTERS)}
+            onClick={() => onChange(EMPTY_MEAL_FILTERS)}
             className="w-full rounded-xl border border-line py-2.5 text-sm font-semibold text-muted"
           >
             Clear filters

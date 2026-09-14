@@ -5,17 +5,26 @@ import {
   UNLOCK_VALUE,
 } from "./unlock";
 import {
+  APP_MODES,
   DIFFICULTIES,
   DURATION_BANDS,
   EMPTY_FILTERS,
+  EMPTY_MEAL_FILTERS,
   EQUIPMENT,
   FOCUSES,
+  MEAL_DIETS,
+  MEAL_FOCUSES,
+  type AppMode,
+  type MealPrepFilters,
   type WorkoutFilters,
 } from "./types";
 
 export const FAVOURITES_KEY = "todays-session:favourites";
 export const FILTERS_KEY = "todays-session:filters";
+export const MEAL_FILTERS_KEY = "todays-session:meal-filters";
 export const LAST_WORKOUT_KEY = "todays-session:last";
+export const LAST_MEAL_KEY = "todays-session:last-meal";
+export const APP_MODE_KEY = "todays-session:mode";
 export const STORAGE_EVENT = "todays-session:storage";
 
 function isOneOf<T extends string>(value: unknown, allowed: readonly T[]): value is T {
@@ -68,6 +77,44 @@ export function saveFavouriteIds(ids: string[]): void {
 
 export function saveFilters(filters: WorkoutFilters): void {
   window.localStorage.setItem(FILTERS_KEY, JSON.stringify(filters));
+  notifyStorage();
+}
+
+export function parseMealFilters(raw: string | null): MealPrepFilters {
+  if (!raw) return EMPTY_MEAL_FILTERS;
+  try {
+    const parsed = JSON.parse(raw) as Partial<MealPrepFilters>;
+    return {
+      focus:
+        parsed.focus === "any" || isOneOf(parsed.focus, MEAL_FOCUSES) ? parsed.focus : "any",
+      duration:
+        parsed.duration === "any" || isOneOf(parsed.duration, DURATION_BANDS)
+          ? parsed.duration
+          : "any",
+      diet: parsed.diet === "any" || isOneOf(parsed.diet, MEAL_DIETS) ? parsed.diet : "any",
+      difficulty:
+        parsed.difficulty === "any" || isOneOf(parsed.difficulty, DIFFICULTIES)
+          ? parsed.difficulty
+          : "any",
+    };
+  } catch {
+    return EMPTY_MEAL_FILTERS;
+  }
+}
+
+export function saveMealFilters(filters: MealPrepFilters): void {
+  window.localStorage.setItem(MEAL_FILTERS_KEY, JSON.stringify(filters));
+  notifyStorage();
+}
+
+export function parseAppMode(raw: string | null): AppMode {
+  return isOneOf(raw, APP_MODES) ? raw : "workout";
+}
+
+export function saveAppMode(mode: AppMode): void {
+  window.localStorage.setItem(APP_MODE_KEY, mode);
+  appModeCacheRaw = mode;
+  appModeCache = mode;
   notifyStorage();
 }
 
@@ -133,6 +180,59 @@ export function saveLastWorkoutId(id: string | null): void {
   }
   lastWorkoutCache = id;
   notifyStorage();
+}
+
+let mealFilterCacheRaw: string | null = "__unset__";
+let mealFilterCache: MealPrepFilters = EMPTY_MEAL_FILTERS;
+
+export function getMealFilterSnapshot(): MealPrepFilters {
+  const raw = window.localStorage.getItem(MEAL_FILTERS_KEY);
+  if (raw === mealFilterCacheRaw) return mealFilterCache;
+  mealFilterCacheRaw = raw;
+  mealFilterCache = parseMealFilters(raw);
+  return mealFilterCache;
+}
+
+export function getMealFilterServerSnapshot(): MealPrepFilters {
+  return EMPTY_MEAL_FILTERS;
+}
+
+let lastMealCache: string | null = "__unset__";
+
+export function getLastMealSnapshot(): string | null {
+  const raw = window.localStorage.getItem(LAST_MEAL_KEY);
+  if (raw === lastMealCache) return lastMealCache;
+  lastMealCache = raw;
+  return raw;
+}
+
+export function getLastMealServerSnapshot(): string | null {
+  return null;
+}
+
+export function saveLastMealId(id: string | null): void {
+  if (id) {
+    window.localStorage.setItem(LAST_MEAL_KEY, id);
+  } else {
+    window.localStorage.removeItem(LAST_MEAL_KEY);
+  }
+  lastMealCache = id;
+  notifyStorage();
+}
+
+let appModeCacheRaw: string | null = "__unset__";
+let appModeCache: AppMode = "workout";
+
+export function getAppModeSnapshot(): AppMode {
+  const raw = window.localStorage.getItem(APP_MODE_KEY);
+  if (raw === appModeCacheRaw) return appModeCache;
+  appModeCacheRaw = raw;
+  appModeCache = parseAppMode(raw);
+  return appModeCache;
+}
+
+export function getAppModeServerSnapshot(): AppMode {
+  return "workout";
 }
 
 function cookieIsUnlocked(): boolean {

@@ -47,11 +47,11 @@ export function Paywall({
           </p>
           <h1 className="font-display text-4xl leading-[0.95] tracking-wide text-cream">
             £1 to unlock
-            <span className="block text-lime">workout ideas.</span>
+            <span className="block text-lime">workouts and meals.</span>
           </h1>
           <p className="max-w-sm text-[15px] leading-relaxed text-muted">
-            A one-off £1 payment for Supps n Social customers. Then this device keeps access — no
-            account, no subscription.
+            A one-off £1 payment for Supps n Social customers. Then this device keeps access to
+            workout and meal prep ideas — no account, no subscription.
           </p>
         </section>
 
@@ -66,7 +66,7 @@ export function Paywall({
             </p>
           </div>
           <ul className="mt-5 space-y-2 text-sm leading-relaxed text-cream/90">
-            <li>Random sessions with a clear method</li>
+            <li>Random workouts and meal preps with a clear method</li>
             <li>Filters, re-roll and saved ideas on this phone</li>
             <li>Pay once. Come back whenever you like.</li>
           </ul>

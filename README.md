@@ -1,17 +1,19 @@
 # Today's Session
 
-A mobile-first web app from **Supps n Social Ltd** for the days you cannot decide what to train.
+A mobile-first web app from **Supps n Social Ltd** for the days you cannot decide what to train or what to meal prep.
 
-Unlock is **£1 once** (GBP). After payment, this device keeps access — no account and no subscription. Tap **Surprise me** and get a random workout with a name, focus, time, kit, difficulty and a clear step-by-step method.
+Unlock is **£1 once** (GBP). After payment, this device keeps access — no account and no subscription. Switch between **Workout ideas** and **Meal prep ideas**, tap **Surprise me**, and get a random pick with a clear step-by-step method.
 
 ## Features
 
-- £1 one-time unlock via Stripe Checkout before workout ideas
-- One prominent **Surprise me** / **Give me another** action
-- 39 seeded sessions: bodyweight, dumbbells, gym, cardio, HIIT, mobility and short hotel/home work
-- Filters for focus, duration, equipment and difficulty
+- £1 one-time unlock via Stripe Checkout gates the whole app (both modes)
+- Thumb-friendly switch between workout and meal prep
+- One prominent **Surprise me** / **Give me another** action in each mode
+- 39 seeded workouts: bodyweight, dumbbells, gym, cardio, HIIT, mobility and short hotel/home work
+- 38 seeded meal preps: high protein, batch cook, quick, vegetarian, budget and recovery
+- Optional filters (workouts: focus, time, kit, level — meals: type, time, diet, level)
 - Re-roll without losing filters
-- Local favourites (`localStorage`)
+- Local favourites (`localStorage`) for both workouts and meal preps
 - British English copy, phone-first layout, PWA-friendly manifest
 
 ## Run locally
@@ -26,7 +28,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## £1 unlock and Stripe
 
-Customers see a paywall until this device is unlocked. The price is **£1.00 GBP**, charged once through [Stripe Checkout](https://stripe.com/docs/payments/checkout).
+Customers see a paywall until this device is unlocked. The price is **£1.00 GBP**, charged once through [Stripe Checkout](https://stripe.com/docs/payments/checkout). That unlock covers workouts and meal preps — there is no second paywall.
 
 Set these in `.env.local` (or your Vercel project settings):
 
@@ -69,7 +71,8 @@ This is a standard Next.js App Router project. Deploy on [Vercel](https://vercel
 - Tailwind CSS
 - Stripe Checkout (one-time £1.00 GBP)
 - Static workout data in `src/data/workouts.ts`
+- Static meal prep data in `src/data/meal-preps.ts`
 
 ## Product note
 
-Saved sessions and unlock live on the device. Clearing site data clears favourites and the £1 unlock, so the paywall will ask again.
+Saved ideas and unlock live on the device. Clearing site data clears favourites and the £1 unlock, so the paywall will ask again.
