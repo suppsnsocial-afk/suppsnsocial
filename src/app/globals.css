@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-ink: #0b0d0c;
+  --color-panel: #141816;
+  --color-panel-2: #1c221d;
+  --color-line: #2a332c;
+  --color-lime: #c8f542;
+  --color-lime-ink: #14200a;
+  --color-cream: #f4f1ea;
+  --color-muted: #9aa39a;
+  --color-ember: #ff7a3d;
+  --font-sans: var(--font-outfit);
+  --font-display: var(--font-oswald);
+}
+
+html {
+  background: var(--color-ink);
+  color: var(--color-cream);
+}
+
+body {
+  min-height: 100dvh;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(200, 245, 66, 0.08), transparent 50%),
+    radial-gradient(900px 500px at 110% 10%, rgba(255, 122, 61, 0.08), transparent 46%),
+    var(--color-ink);
+  color: var(--color-cream);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  word-spacing: 0.12em;
+}
+
+.surprise-button {
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.surprise-button:active {
+  transform: scale(0.985);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .surprise-button {
+    transition: none;
+  }
+}
