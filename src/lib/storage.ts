@@ -1,4 +1,10 @@
 import {
+  UNLOCK_COOKIE,
+  UNLOCK_COOKIE_MAX_AGE,
+  UNLOCK_STORAGE_KEY,
+  UNLOCK_VALUE,
+} from "./unlock";
+import {
   DIFFICULTIES,
   DURATION_BANDS,
   EMPTY_FILTERS,
@@ -126,5 +132,36 @@ export function saveLastWorkoutId(id: string | null): void {
     window.localStorage.removeItem(LAST_WORKOUT_KEY);
   }
   lastWorkoutCache = id;
+  notifyStorage();
+}
+
+function cookieIsUnlocked(): boolean {
+  return document.cookie.split("; ").some((part) => {
+    const [name, value] = part.split("=");
+    return name === UNLOCK_COOKIE && value === UNLOCK_VALUE;
+  });
+}
+
+function writeUnlockCookie(): void {
+  document.cookie = [
+    `${UNLOCK_COOKIE}=${UNLOCK_VALUE}`,
+    "Path=/",
+    `Max-Age=${UNLOCK_COOKIE_MAX_AGE}`,
+    "SameSite=Lax",
+  ].join("; ");
+}
+
+export function getUnlockSnapshot(): boolean {
+  const stored = window.localStorage.getItem(UNLOCK_STORAGE_KEY) === UNLOCK_VALUE;
+  return stored || cookieIsUnlocked();
+}
+
+export function getUnlockServerSnapshot(): boolean {
+  return false;
+}
+
+export function persistUnlock(): void {
+  window.localStorage.setItem(UNLOCK_STORAGE_KEY, UNLOCK_VALUE);
+  writeUnlockCookie();
   notifyStorage();
 }
