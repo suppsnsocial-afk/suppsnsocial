@@ -9,13 +9,15 @@ export const FOCUSES = [
 
 export const EQUIPMENT = ["bodyweight", "dumbbells", "gym"] as const;
 
-export const DIFFICULTIES = ["beginner", "intermediate", "advanced"] as const;
+export const WORKOUT_DIFFICULTIES = ["novice", "intermediate", "advanced"] as const;
+export const MEAL_DIFFICULTIES = ["beginner", "intermediate", "advanced"] as const;
 
 export const DURATION_BANDS = ["under-20", "20-30", "30-45", "45-plus"] as const;
 
 export type Focus = (typeof FOCUSES)[number];
 export type Equipment = (typeof EQUIPMENT)[number];
-export type Difficulty = (typeof DIFFICULTIES)[number];
+export type WorkoutDifficulty = (typeof WORKOUT_DIFFICULTIES)[number];
+export type MealDifficulty = (typeof MEAL_DIFFICULTIES)[number];
 export type DurationBand = (typeof DURATION_BANDS)[number];
 
 export type Workout = {
@@ -25,7 +27,7 @@ export type Workout = {
   focus: Focus;
   durationMinutes: number;
   equipment: Equipment;
-  difficulty: Difficulty;
+  difficulty: WorkoutDifficulty;
   steps: string[];
 };
 
@@ -33,7 +35,7 @@ export type WorkoutFilters = {
   focus: Focus | "any";
   duration: DurationBand | "any";
   equipment: Equipment | "any";
-  difficulty: Difficulty | "any";
+  difficulty: WorkoutDifficulty | "any";
 };
 
 export const EMPTY_FILTERS: WorkoutFilters = {
@@ -73,7 +75,7 @@ export type MealPrep = {
   durationMinutes: number;
   servings: number;
   equipment: MealKitchen;
-  difficulty: Difficulty;
+  difficulty: MealDifficulty;
   steps: string[];
   nutrition: MealNutrition;
 };
@@ -95,7 +97,7 @@ export type MealPrepFilters = {
   focus: MealFocus | "any";
   duration: DurationBand | "any";
   diet: MealDiet | "any";
-  difficulty: Difficulty | "any";
+  difficulty: MealDifficulty | "any";
 };
 
 export const EMPTY_MEAL_FILTERS: MealPrepFilters = {
@@ -120,7 +122,13 @@ export const EQUIPMENT_LABELS: Record<Equipment, string> = {
   gym: "Gym",
 };
 
-export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
+export const WORKOUT_DIFFICULTY_LABELS: Record<WorkoutDifficulty, string> = {
+  novice: "Novice",
+  intermediate: "Intermediate",
+  advanced: "Advanced",
+};
+
+export const MEAL_DIFFICULTY_LABELS: Record<MealDifficulty, string> = {
   beginner: "Beginner",
   intermediate: "Intermediate",
   advanced: "Advanced",

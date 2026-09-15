@@ -2,8 +2,8 @@
 
 import { hasActiveFilters } from "@/lib/filters";
 import {
-  DIFFICULTIES,
-  DIFFICULTY_LABELS,
+  MEAL_DIFFICULTIES,
+  MEAL_DIFFICULTY_LABELS,
   DURATION_BANDS,
   DURATION_LABELS,
   EMPTY_MEAL_FILTERS,
@@ -11,9 +11,9 @@ import {
   MEAL_DIET_LABELS,
   MEAL_FOCUSES,
   MEAL_FOCUS_LABELS,
-  type Difficulty,
   type DurationBand,
   type MealDiet,
+  type MealDifficulty,
   type MealFocus,
   type MealPrepFilters,
 } from "@/lib/types";
@@ -89,9 +89,9 @@ export function MealFilterPanel({ filters, matchCount, onChange }: MealFilterPan
           onChange={(difficulty) => onChange({ ...filters, difficulty })}
           options={[
             { value: "any" as const, label: "Any" },
-            ...DIFFICULTIES.map((item) => ({
-              value: item as Difficulty | "any",
-              label: DIFFICULTY_LABELS[item],
+            ...MEAL_DIFFICULTIES.map((item) => ({
+              value: item as MealDifficulty | "any",
+              label: MEAL_DIFFICULTY_LABELS[item],
             })),
           ]}
         />

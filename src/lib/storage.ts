@@ -6,14 +6,15 @@ import {
 } from "./unlock";
 import {
   APP_MODES,
-  DIFFICULTIES,
   DURATION_BANDS,
   EMPTY_FILTERS,
   EMPTY_MEAL_FILTERS,
   EQUIPMENT,
   FOCUSES,
+  MEAL_DIFFICULTIES,
   MEAL_DIETS,
   MEAL_FOCUSES,
+  WORKOUT_DIFFICULTIES,
   type AppMode,
   type MealPrepFilters,
   type WorkoutFilters,
@@ -46,7 +47,14 @@ export function parseFavouriteIds(raw: string | null): string[] {
 export function parseFilters(raw: string | null): WorkoutFilters {
   if (!raw) return EMPTY_FILTERS;
   try {
-    const parsed = JSON.parse(raw) as Partial<WorkoutFilters>;
+    const parsed = JSON.parse(raw) as Partial<WorkoutFilters> & { difficulty?: string };
+    const difficultyRaw = parsed.difficulty;
+    const difficulty =
+      difficultyRaw === "any" || isOneOf(difficultyRaw, WORKOUT_DIFFICULTIES)
+        ? difficultyRaw
+        : difficultyRaw === "beginner"
+          ? "novice"
+          : "any";
     return {
       focus: parsed.focus === "any" || isOneOf(parsed.focus, FOCUSES) ? parsed.focus : "any",
       duration:
@@ -57,10 +65,7 @@ export function parseFilters(raw: string | null): WorkoutFilters {
         parsed.equipment === "any" || isOneOf(parsed.equipment, EQUIPMENT)
           ? parsed.equipment
           : "any",
-      difficulty:
-        parsed.difficulty === "any" || isOneOf(parsed.difficulty, DIFFICULTIES)
-          ? parsed.difficulty
-          : "any",
+      difficulty,
     };
   } catch {
     return EMPTY_FILTERS;
@@ -94,7 +99,7 @@ export function parseMealFilters(raw: string | null): MealPrepFilters {
           : "any",
       diet: parsed.diet === "any" || isOneOf(parsed.diet, MEAL_DIETS) ? parsed.diet : "any",
       difficulty:
-        parsed.difficulty === "any" || isOneOf(parsed.difficulty, DIFFICULTIES)
+        parsed.difficulty === "any" || isOneOf(parsed.difficulty, MEAL_DIFFICULTIES)
           ? parsed.difficulty
           : "any",
     };

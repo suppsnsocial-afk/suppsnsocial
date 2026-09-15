@@ -2,8 +2,8 @@
 
 import { hasActiveFilters } from "@/lib/filters";
 import {
-  DIFFICULTIES,
-  DIFFICULTY_LABELS,
+  WORKOUT_DIFFICULTIES,
+  WORKOUT_DIFFICULTY_LABELS,
   DURATION_BANDS,
   DURATION_LABELS,
   EMPTY_FILTERS,
@@ -11,10 +11,10 @@ import {
   EQUIPMENT_LABELS,
   FOCUSES,
   FOCUS_LABELS,
-  type Difficulty,
   type DurationBand,
   type Equipment,
   type Focus,
+  type WorkoutDifficulty,
   type WorkoutFilters,
 } from "@/lib/types";
 import { ChipRow } from "./FilterChips";
@@ -89,9 +89,9 @@ export function FilterPanel({ filters, matchCount, onChange }: FilterPanelProps)
           onChange={(difficulty) => onChange({ ...filters, difficulty })}
           options={[
             { value: "any" as const, label: "Any" },
-            ...DIFFICULTIES.map((item) => ({
-              value: item as Difficulty | "any",
-              label: DIFFICULTY_LABELS[item],
+            ...WORKOUT_DIFFICULTIES.map((item) => ({
+              value: item as WorkoutDifficulty | "any",
+              label: WORKOUT_DIFFICULTY_LABELS[item],
             })),
           ]}
         />

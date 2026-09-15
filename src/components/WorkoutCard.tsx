@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { formatDuration } from "@/lib/filters";
 import {
-  DIFFICULTY_LABELS,
+  WORKOUT_DIFFICULTY_LABELS,
   EQUIPMENT_LABELS,
   FOCUS_LABELS,
   type Workout,
@@ -52,7 +52,7 @@ export function WorkoutCard({
           <MetaChip>{FOCUS_LABELS[workout.focus]}</MetaChip>
           <MetaChip>{formatDuration(workout.durationMinutes)}</MetaChip>
           <MetaChip>{EQUIPMENT_LABELS[workout.equipment]}</MetaChip>
-          <MetaChip>{DIFFICULTY_LABELS[workout.difficulty]}</MetaChip>
+          <MetaChip>{WORKOUT_DIFFICULTY_LABELS[workout.difficulty]}</MetaChip>
         </div>
 
         <div>

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { formatDuration, formatServings } from "@/lib/filters";
 import {
-  DIFFICULTY_LABELS,
+  MEAL_DIFFICULTY_LABELS,
   MEAL_DIET_LABELS,
   MEAL_FOCUS_LABELS,
   MEAL_KITCHEN_LABELS,
@@ -74,7 +74,7 @@ export function MealPrepCard({
           <MetaChip>{formatDuration(meal.durationMinutes)}</MetaChip>
           <MetaChip>{formatServings(meal.servings)}</MetaChip>
           <MetaChip>{MEAL_KITCHEN_LABELS[meal.equipment]}</MetaChip>
-          <MetaChip>{DIFFICULTY_LABELS[meal.difficulty]}</MetaChip>
+          <MetaChip>{MEAL_DIFFICULTY_LABELS[meal.difficulty]}</MetaChip>
         </div>
 
         <MealNutritionPanel meal={meal} compact={locked} />

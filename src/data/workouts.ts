@@ -23,7 +23,7 @@ export const workouts: Workout[] = [
     focus: "full-body",
     durationMinutes: 16,
     equipment: "bodyweight",
-    difficulty: "beginner",
+    difficulty: "novice",
     steps: [
       "Warm up for two minutes: march on the spot, then swing each arm in big circles.",
       "Do three rounds of: 8 kneeling or full press-ups, 12 bodyweight squats, 10 glute bridges, 20-second plank.",
@@ -53,7 +53,7 @@ export const workouts: Workout[] = [
     focus: "legs",
     durationMinutes: 20,
     equipment: "bodyweight",
-    difficulty: "beginner",
+    difficulty: "novice",
     steps: [
       "Warm up with 20 bodyweight squats and 10 hip circles each side.",
       "Do walking lunges in a ladder: 6, 8, 10, 12 steps out and back. Rest 40 seconds between ladders.",
@@ -83,7 +83,7 @@ export const workouts: Workout[] = [
     focus: "mobility",
     durationMinutes: 10,
     equipment: "bodyweight",
-    difficulty: "beginner",
+    difficulty: "novice",
     steps: [
       "Stand up. Roll the shoulders back 10 times, then turn the head slowly left and right.",
       "Hold a doorway chest stretch for 40 seconds each side. Keep ribs stacked, not flared.",
@@ -98,7 +98,7 @@ export const workouts: Workout[] = [
     focus: "mobility",
     durationMinutes: 20,
     equipment: "bodyweight",
-    difficulty: "beginner",
+    difficulty: "novice",
     steps: [
       "Lie on your back and hug both knees for one minute. Breathe into the lower ribs.",
       "Hold each stretch for 60–75 seconds: figure-four, kneeling hip flexor, seated hamstring, child’s pose.",
@@ -143,7 +143,7 @@ export const workouts: Workout[] = [
     focus: "cardio",
     durationMinutes: 16,
     equipment: "bodyweight",
-    difficulty: "beginner",
+    difficulty: "novice",
     steps: [
       "Warm up with 60 seconds of easy skipping or marching, then 10 hip openers each side.",
       "Do 8 rounds: 45 seconds skip (or high knees), 25 seconds rest.",
@@ -173,7 +173,7 @@ export const workouts: Workout[] = [
     focus: "legs",
     durationMinutes: 25,
     equipment: "dumbbells",
-    difficulty: "beginner",
+    difficulty: "novice",
     steps: [
       "Warm up with 15 bodyweight squats and 30 seconds of hip flexor lunges each side.",
       "Hold one dumbbell at your chest. Do 4 sets of 8–10 goblet squats. Rest 75 seconds.",
@@ -218,7 +218,7 @@ export const workouts: Workout[] = [
     focus: "full-body",
     durationMinutes: 35,
     equipment: "gym",
-    difficulty: "beginner",
+    difficulty: "novice",
     steps: [
       "Five minutes easy bike or treadmill. Then pick weights you can do for 12 controlled reps.",
       "Circuit, 3 rounds: leg press 12, chest press 10, seated row 12, shoulder press 10, lat raise or cable fly 12.",
@@ -308,7 +308,7 @@ export const workouts: Workout[] = [
     focus: "mobility",
     durationMinutes: 25,
     equipment: "bodyweight",
-    difficulty: "beginner",
+    difficulty: "novice",
     steps: [
       "Start in child’s pose for 90 seconds, then move to a downward dog and pedal the heels.",
       "Flow slowly for 8 minutes: world’s greatest stretch, hip 90/90 transitions, and deep squat holds with a heel lift if needed.",
@@ -323,7 +323,7 @@ export const workouts: Workout[] = [
     focus: "full-body",
     durationMinutes: 6,
     equipment: "bodyweight",
-    difficulty: "beginner",
+    difficulty: "novice",
     steps: [
       "30 seconds marching, 30 seconds arm swings.",
       "40 seconds bodyweight squats. 20 seconds rest.",
@@ -368,7 +368,7 @@ export const workouts: Workout[] = [
     focus: "core",
     durationMinutes: 12,
     equipment: "bodyweight",
-    difficulty: "beginner",
+    difficulty: "novice",
     steps: [
       "Set up on elbows or hands. Squeeze glutes and think ‘ribs down’.",
       "Three rounds: 30-second front plank, 20-second side plank each side, 8 slow shoulder taps.",
@@ -413,7 +413,7 @@ export const workouts: Workout[] = [
     focus: "cardio",
     durationMinutes: 40,
     equipment: "bodyweight",
-    difficulty: "beginner",
+    difficulty: "novice",
     steps: [
       "Pick a route and leave the headphones-on-sprint mindset at home. You should be able to chat.",
       "Walk briskly for 35 minutes. Arms swing. Soft but quick steps. Slight hill if you have one.",
@@ -443,7 +443,7 @@ export const workouts: Workout[] = [
     focus: "mobility",
     durationMinutes: 15,
     equipment: "bodyweight",
-    difficulty: "beginner",
+    difficulty: "novice",
     steps: [
       "Find a quiet corner or hotel room. Roll the neck and shoulders for 60 seconds.",
       "Hold a hip flexor lunge 50 seconds each side, then a seated figure-four 50 seconds each side.",
@@ -483,12 +483,12 @@ export const workouts: Workout[] = [
   },
   {
     id: "gym-intro",
-    name: "Beginner Full-Body Gym Intro",
+    name: "Novice Full-Body Gym Intro",
     description: "A calm first (or rusty return) session. Learn the patterns, leave feeling capable.",
     focus: "full-body",
     durationMinutes: 30,
     equipment: "gym",
-    difficulty: "beginner",
+    difficulty: "novice",
     steps: [
       "Ask staff if you need a machine shown. Warm up 5 minutes easy cardio.",
       "Goblet squat or leg press 3 × 10. Chest press 3 × 10. Seated row 3 × 10. Rest 60–90 seconds.",
@@ -518,7 +518,7 @@ export const workouts: Workout[] = [
     focus: "mobility",
     durationMinutes: 16,
     equipment: "bodyweight",
-    difficulty: "beginner",
+    difficulty: "novice",
     steps: [
       "Spend 2 minutes in a deep squat hold, holding a doorframe if your heels lift.",
       "90/90 hip switches: 8 slow reps each side, pausing when you feel the sticky bit.",
@@ -548,7 +548,7 @@ export const workouts: Workout[] = [
     focus: "upper",
     durationMinutes: 22,
     equipment: "dumbbells",
-    difficulty: "beginner",
+    difficulty: "novice",
     steps: [
       "Warm up with 10 arm circles and 8 light press-ups.",
       "3 sets of 10 seated or standing shoulder press. Rest 60 seconds.",
@@ -563,7 +563,7 @@ export const workouts: Workout[] = [
     focus: "core",
     durationMinutes: 20,
     equipment: "bodyweight",
-    difficulty: "beginner",
+    difficulty: "novice",
     steps: [
       "Two minutes of marching. Then 2 rounds of 20-second plank, 10 dead bugs, 8 bird-dogs each side.",
       "Walk brisk corridor or block laps for 12 minutes. Stand tall, ribs stacked, arms swinging.",
