@@ -1,9 +1,22 @@
 import { NextResponse } from "next/server";
-import { getStripe, getUnlockConfig, isDemoUnlockEnabled, isPaidCheckoutSession } from "@/lib/stripe-server";
+import { isKnownMealId } from "@/data/meal-preps";
+import {
+  getStripe,
+  getUnlockConfig,
+  isDemoUnlockEnabled,
+  isPaidCheckoutSession,
+  paidMealIdFromSession,
+} from "@/lib/stripe-server";
 import { unlockCookieHeader } from "@/lib/unlock";
 
-function unlockedResponse() {
-  const response = NextResponse.json({ unlocked: true });
+type UnlockBody = {
+  sessionId?: string;
+  demo?: boolean;
+  mealId?: string;
+};
+
+function workoutUnlockedResponse() {
+  const response = NextResponse.json({ unlocked: true, product: "workout" });
   response.headers.append(
     "Set-Cookie",
     unlockCookieHeader(process.env.NODE_ENV === "production"),
@@ -16,9 +29,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  let body: { sessionId?: string; demo?: boolean } = {};
+  let body: UnlockBody = {};
   try {
-    body = (await request.json()) as { sessionId?: string; demo?: boolean };
+    body = (await request.json()) as UnlockBody;
   } catch {
     body = {};
   }
@@ -30,7 +43,16 @@ export async function POST(request: Request) {
         { status: 403 },
       );
     }
-    return unlockedResponse();
+
+    const mealId = body.mealId?.trim();
+    if (mealId) {
+      if (!isKnownMealId(mealId)) {
+        return NextResponse.json({ error: "That meal prep idea was not found." }, { status: 400 });
+      }
+      return NextResponse.json({ unlocked: true, product: "meal", mealId });
+    }
+
+    return workoutUnlockedResponse();
   }
 
   const sessionId = body.sessionId?.trim();
@@ -40,10 +62,19 @@ export async function POST(request: Request) {
 
   try {
     const session = await getStripe().checkout.sessions.retrieve(sessionId);
+    const mealId = paidMealIdFromSession(session);
+
+    if (mealId) {
+      if (!isKnownMealId(mealId)) {
+        return NextResponse.json({ error: "That meal prep idea was not found." }, { status: 400 });
+      }
+      return NextResponse.json({ unlocked: true, product: "meal", mealId });
+    }
+
     if (!isPaidCheckoutSession(session)) {
       return NextResponse.json({ error: "Payment is not complete yet." }, { status: 402 });
     }
-    return unlockedResponse();
+    return workoutUnlockedResponse();
   } catch {
     return NextResponse.json({ error: "Could not verify that payment with Stripe." }, { status: 400 });
   }

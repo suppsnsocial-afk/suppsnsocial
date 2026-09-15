@@ -63,8 +63,16 @@ export function pickMealPrep(
   meals: MealPrep[],
   filters: MealPrepFilters,
   excludeId?: string,
+  purchasedIds?: readonly string[],
 ): MealPrep | null {
-  return pickFrom(filterMealPreps(meals, filters), excludeId);
+  const pool = filterMealPreps(meals, filters);
+  if (purchasedIds) {
+    const unbought = pool.filter(
+      (meal) => !purchasedIds.includes(meal.id) && meal.id !== excludeId,
+    );
+    if (unbought.length > 0) return pickFrom(unbought);
+  }
+  return pickFrom(pool, excludeId);
 }
 
 function pickFrom<T extends { id: string }>(pool: T[], excludeId?: string): T | null {

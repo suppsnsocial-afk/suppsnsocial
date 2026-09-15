@@ -20,6 +20,7 @@ import {
 } from "./types";
 
 export const FAVOURITES_KEY = "todays-session:favourites";
+export const PURCHASED_MEALS_KEY = "todays-session:purchased-meals";
 export const FILTERS_KEY = "todays-session:filters";
 export const MEAL_FILTERS_KEY = "todays-session:meal-filters";
 export const LAST_WORKOUT_KEY = "todays-session:last";
@@ -264,4 +265,32 @@ export function persistUnlock(): void {
   window.localStorage.setItem(UNLOCK_STORAGE_KEY, UNLOCK_VALUE);
   writeUnlockCookie();
   notifyStorage();
+}
+
+let purchasedMealCacheRaw: string | null = null;
+let purchasedMealCache: string[] = [];
+
+export function getPurchasedMealSnapshot(): string[] {
+  const raw = window.localStorage.getItem(PURCHASED_MEALS_KEY);
+  if (raw === purchasedMealCacheRaw) return purchasedMealCache;
+  purchasedMealCacheRaw = raw;
+  purchasedMealCache = parseFavouriteIds(raw);
+  return purchasedMealCache;
+}
+
+export function getPurchasedMealServerSnapshot(): string[] {
+  return EMPTY_FAVOURITES;
+}
+
+export function savePurchasedMealIds(ids: string[]): void {
+  window.localStorage.setItem(PURCHASED_MEALS_KEY, JSON.stringify(ids));
+  purchasedMealCacheRaw = JSON.stringify(ids);
+  purchasedMealCache = ids;
+  notifyStorage();
+}
+
+export function persistPurchasedMeal(id: string): void {
+  const current = getPurchasedMealSnapshot();
+  if (current.includes(id)) return;
+  savePurchasedMealIds([id, ...current]);
 }

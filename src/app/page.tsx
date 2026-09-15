@@ -1,11 +1,12 @@
+import { CheckoutReturn } from "@/components/CheckoutReturn";
 import { SessionApp } from "@/components/SessionApp";
-import { UnlockGate } from "@/components/UnlockGate";
 import { getUnlockConfig } from "@/lib/stripe-server";
 
 export default function Home() {
+  const config = getUnlockConfig();
   return (
-    <UnlockGate config={getUnlockConfig()}>
-      <SessionApp />
-    </UnlockGate>
+    <CheckoutReturn>
+      <SessionApp config={config} />
+    </CheckoutReturn>
   );
 }

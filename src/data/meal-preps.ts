@@ -648,3 +648,11 @@ export const mealPreps: MealPrep[] = [
     ],
   },
 ];
+
+export function getMealPrepById(id: string): MealPrep | undefined {
+  return mealPreps.find((meal) => meal.id === id);
+}
+
+export function isKnownMealId(id: string): boolean {
+  return mealPreps.some((meal) => meal.id === id);
+}

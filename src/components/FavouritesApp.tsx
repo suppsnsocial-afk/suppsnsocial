@@ -4,18 +4,32 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { mealPreps } from "@/data/meal-preps";
 import { workouts } from "@/data/workouts";
+import { useCheckoutNotice } from "@/components/CheckoutReturn";
+import { useCheckoutActions } from "@/hooks/useCheckoutActions";
 import { useFavourites } from "@/hooks/useFavourites";
+import { usePurchasedMeals } from "@/hooks/usePurchasedMeals";
+import { useUnlock } from "@/hooks/useUnlock";
+import type { UnlockConfig } from "@/lib/unlock";
 import type { MealPrep, Workout } from "@/lib/types";
 import { AppHeader } from "./AppHeader";
 import { MealPrepCard } from "./MealPrepCard";
+import { Paywall } from "./Paywall";
 import { WorkoutCard } from "./WorkoutCard";
 
 type SavedItem =
   | { kind: "workout"; item: Workout }
   | { kind: "meal"; item: MealPrep };
 
-export function FavouritesApp() {
+type FavouritesAppProps = {
+  config: UnlockConfig;
+};
+
+export function FavouritesApp({ config }: FavouritesAppProps) {
   const { ids, toggle, isSaved, count } = useFavourites();
+  const { unlocked } = useUnlock();
+  const { isPurchased } = usePurchasedMeals();
+  const notice = useCheckoutNotice();
+  const checkout = useCheckoutActions();
   const [openId, setOpenId] = useState<string | null>(null);
 
   const savedItems = useMemo(() => {
@@ -46,7 +60,7 @@ export function FavouritesApp() {
           <div className="rounded-3xl border border-dashed border-line bg-panel/60 px-5 py-10 text-center">
             <p className="font-display text-2xl tracking-wide text-cream">Nothing saved yet</p>
             <p className="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-muted">
-              Roll a workout or meal prep and tap Save this. It will show up here next time.
+              Unlock a workout or a meal prep, then tap Save this. It will show up here next time.
             </p>
             <Link
               href="/"
@@ -65,14 +79,26 @@ export function FavouritesApp() {
               ← All saved
             </button>
             {openItem.kind === "workout" ? (
-              <WorkoutCard
-                workout={openItem.item}
-                saved={isSaved(openItem.item.id)}
-                onToggleSave={() => {
-                  toggle(openItem.item.id);
-                  setOpenId(null);
-                }}
-              />
+              unlocked ? (
+                <WorkoutCard
+                  workout={openItem.item}
+                  saved={isSaved(openItem.item.id)}
+                  onToggleSave={() => {
+                    toggle(openItem.item.id);
+                    setOpenId(null);
+                  }}
+                />
+              ) : (
+                <Paywall
+                  config={config}
+                  cancelled={notice.cancelledWorkout}
+                  verifying={notice.verifyingWorkout}
+                  error={notice.error ?? checkout.error}
+                  paying={checkout.paying}
+                  onPay={() => void checkout.startWorkoutCheckout()}
+                  onDemoUnlock={() => void checkout.demoUnlockWorkouts()}
+                />
+              )
             ) : (
               <MealPrepCard
                 meal={openItem.item}
@@ -81,6 +107,15 @@ export function FavouritesApp() {
                   toggle(openItem.item.id);
                   setOpenId(null);
                 }}
+                locked={!isPurchased(openItem.item.id)}
+                priceLabel={config.mealPriceLabel}
+                stripeConfigured={config.stripeConfigured}
+                demoUnlockAvailable={config.demoUnlockAvailable}
+                unlocking={checkout.paying || notice.verifyingMeal}
+                unlockError={notice.error ?? checkout.error}
+                cancelled={notice.cancelledMeal}
+                onUnlock={() => void checkout.startMealCheckout(openItem.item.id)}
+                onDemoUnlock={() => void checkout.demoUnlockMeal(openItem.item.id)}
               />
             )}
           </div>

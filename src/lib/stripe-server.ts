@@ -1,5 +1,11 @@
 import Stripe from "stripe";
-import { UNLOCK_PRICE_LABEL, type UnlockConfig } from "./unlock";
+import {
+  MEAL_PRICE_LABEL,
+  MEAL_PRODUCT,
+  UNLOCK_PRICE_LABEL,
+  WORKOUT_PRODUCT,
+  type UnlockConfig,
+} from "./unlock";
 
 export function isDemoUnlockEnabled(): boolean {
   return process.env.NODE_ENV !== "production" && process.env.DEMO_UNLOCK === "true";
@@ -14,6 +20,7 @@ export function getUnlockConfig(): UnlockConfig {
     stripeConfigured: isStripeConfigured(),
     demoUnlockAvailable: isDemoUnlockEnabled(),
     priceLabel: UNLOCK_PRICE_LABEL,
+    mealPriceLabel: MEAL_PRICE_LABEL,
   };
 }
 
@@ -35,9 +42,17 @@ export function appOrigin(request: Request): string {
   return `${proto}://${host}`;
 }
 
+export function isCheckoutPaid(session: Stripe.Checkout.Session): boolean {
+  return session.payment_status === "paid" || session.status === "complete";
+}
+
 export function isPaidCheckoutSession(session: Stripe.Checkout.Session): boolean {
-  return (
-    session.metadata?.product === "todays-session-unlock" &&
-    (session.payment_status === "paid" || session.status === "complete")
-  );
+  return session.metadata?.product === WORKOUT_PRODUCT && isCheckoutPaid(session);
+}
+
+export function paidMealIdFromSession(session: Stripe.Checkout.Session): string | null {
+  const mealId = session.metadata?.mealId?.trim();
+  if (!mealId) return null;
+  if (session.metadata?.product !== MEAL_PRODUCT || !isCheckoutPaid(session)) return null;
+  return mealId;
 }
