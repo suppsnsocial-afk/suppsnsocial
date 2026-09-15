@@ -75,6 +75,20 @@ export type MealPrep = {
   equipment: MealKitchen;
   difficulty: Difficulty;
   steps: string[];
+  nutrition: MealNutrition;
+};
+
+/** Typical recipe estimates. All macros are per serving. */
+export type MealNutrition = {
+  kcal: number;
+  proteinG: number;
+  carbsG: number;
+  fatG: number;
+  fibreG: number;
+  sugarG: number;
+  saltG: number;
+  servingWeightG: number;
+  batchWeightG: number;
 };
 
 export type MealPrepFilters = {

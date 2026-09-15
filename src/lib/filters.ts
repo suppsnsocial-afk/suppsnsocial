@@ -15,6 +15,24 @@ export function formatServings(servings: number): string {
   return servings === 1 ? "1 serving" : `${servings} servings`;
 }
 
+export function formatGrams(grams: number): string {
+  const rounded = Number.isInteger(grams) ? grams : Math.round(grams * 10) / 10;
+  return `${rounded}g`;
+}
+
+export function formatWeight(grams: number): string {
+  if (grams >= 1000) {
+    const kg = Math.round((grams / 1000) * 10) / 10;
+    const label = Number.isInteger(kg) ? String(kg) : kg.toFixed(1);
+    return `${label}kg`;
+  }
+  return formatGrams(Math.round(grams));
+}
+
+export function formatKcal(kcal: number): string {
+  return `${Math.round(kcal)} kcal`;
+}
+
 export function matchesFilters(workout: Workout, filters: WorkoutFilters): boolean {
   if (filters.focus !== "any" && workout.focus !== filters.focus) return false;
   if (filters.equipment !== "any" && workout.equipment !== filters.equipment) {

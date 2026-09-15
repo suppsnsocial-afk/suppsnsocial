@@ -12,7 +12,7 @@ Switch between **Workout ideas** and **Meal prep ideas**. Workouts unlock **£1 
 - Purchased meal IDs persist in `localStorage` — same meal is not charged again
 - One prominent **Surprise me** / **Give me another** action in each mode
 - 39 seeded workouts: bodyweight, dumbbells, gym, cardio, HIIT, mobility and short hotel/home work
-- 38 seeded meal preps: high protein, batch cook, quick, vegetarian, budget and recovery
+- 38 seeded meal preps: high protein, batch cook, quick, vegetarian, budget and recovery, each with per-serving macros and serving/batch weight
 - Optional filters (workouts: focus, time, kit, level — meals: type, time, diet, level)
 - Local favourites (`localStorage`) for unlocked workouts and purchased meal preps
 - British English copy, phone-first layout, PWA-friendly manifest
@@ -83,7 +83,7 @@ This is a standard Next.js App Router project. Deploy on [Vercel](https://vercel
 - Tailwind CSS
 - Stripe Checkout (£1.00 workouts, 50p per meal)
 - Static workout data in `src/data/workouts.ts`
-- Static meal prep data in `src/data/meal-preps.ts`
+- Static meal prep data in `src/data/meal-preps.ts` (typical recipe estimates: kcal, protein, carbs, fat, fibre, sugar, salt, serving and batch weight)
 
 ## Product note
 

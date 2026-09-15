@@ -13,6 +13,7 @@ import type { UnlockConfig } from "@/lib/unlock";
 import type { MealPrep, Workout } from "@/lib/types";
 import { AppHeader } from "./AppHeader";
 import { MealPrepCard } from "./MealPrepCard";
+import { mealMacroSummary } from "./MealNutritionPanel";
 import { Paywall } from "./Paywall";
 import { WorkoutCard } from "./WorkoutCard";
 
@@ -136,6 +137,11 @@ export function FavouritesApp({ config }: FavouritesAppProps) {
                       {item.name}
                     </span>
                     <span className="mt-1 block text-sm text-muted">{item.description}</span>
+                    {kind === "meal" ? (
+                      <span className="mt-1 block text-xs font-semibold text-lime">
+                        {mealMacroSummary(item)}
+                      </span>
+                    ) : null}
                   </span>
                   <span className="shrink-0 text-lg text-lime" aria-hidden>
                     ›

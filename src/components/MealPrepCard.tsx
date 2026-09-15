@@ -7,6 +7,7 @@ import {
   MEAL_KITCHEN_LABELS,
   type MealPrep,
 } from "@/lib/types";
+import { MealNutritionPanel } from "./MealNutritionPanel";
 
 type MealPrepCardProps = {
   meal: MealPrep;
@@ -75,6 +76,8 @@ export function MealPrepCard({
           <MetaChip>{MEAL_KITCHEN_LABELS[meal.equipment]}</MetaChip>
           <MetaChip>{DIFFICULTY_LABELS[meal.difficulty]}</MetaChip>
         </div>
+
+        <MealNutritionPanel meal={meal} compact={locked} />
 
         {locked ? (
           <div className="space-y-3 rounded-2xl border border-line bg-ink/40 px-4 py-5">
