@@ -1,4 +1,4 @@
-import type { DurationBand, Workout, WorkoutFilters } from "./types";
+import type { DurationBand, MealPrep, MealPrepFilters, Workout, WorkoutFilters } from "./types";
 
 export function durationBand(minutes: number): DurationBand {
   if (minutes < 20) return "under-20";
@@ -9,6 +9,28 @@ export function durationBand(minutes: number): DurationBand {
 
 export function formatDuration(minutes: number): string {
   return minutes === 1 ? "1 min" : `${minutes} mins`;
+}
+
+export function formatServings(servings: number): string {
+  return servings === 1 ? "1 serving" : `${servings} servings`;
+}
+
+export function formatGrams(grams: number): string {
+  const rounded = Number.isInteger(grams) ? grams : Math.round(grams * 10) / 10;
+  return `${rounded}g`;
+}
+
+export function formatWeight(grams: number): string {
+  if (grams >= 1000) {
+    const kg = Math.round((grams / 1000) * 10) / 10;
+    const label = Number.isInteger(kg) ? String(kg) : kg.toFixed(1);
+    return `${label}kg`;
+  }
+  return formatGrams(Math.round(grams));
+}
+
+export function formatKcal(kcal: number): string {
+  return `${Math.round(kcal)} kcal`;
 }
 
 export function matchesFilters(workout: Workout, filters: WorkoutFilters): boolean {
@@ -29,7 +51,7 @@ export function filterWorkouts(workouts: Workout[], filters: WorkoutFilters): Wo
   return workouts.filter((workout) => matchesFilters(workout, filters));
 }
 
-export function hasActiveFilters(filters: WorkoutFilters): boolean {
+export function hasActiveFilters(filters: WorkoutFilters | MealPrepFilters): boolean {
   return Object.values(filters).some((value) => value !== "any");
 }
 
@@ -38,11 +60,44 @@ export function pickWorkout(
   filters: WorkoutFilters,
   excludeId?: string,
 ): Workout | null {
-  const pool = filterWorkouts(workouts, filters);
-  if (pool.length === 0) return null;
-  if (pool.length === 1) return pool[0];
+  return pickFrom(filterWorkouts(workouts, filters), excludeId);
+}
 
-  const withoutLast = excludeId ? pool.filter((workout) => workout.id !== excludeId) : pool;
+export function matchesMealFilters(meal: MealPrep, filters: MealPrepFilters): boolean {
+  if (filters.focus !== "any" && meal.focus !== filters.focus) return false;
+  if (filters.diet !== "any" && meal.diet !== filters.diet) return false;
+  if (filters.difficulty !== "any" && meal.difficulty !== filters.difficulty) return false;
+  if (filters.duration !== "any" && durationBand(meal.durationMinutes) !== filters.duration) {
+    return false;
+  }
+  return true;
+}
+
+export function filterMealPreps(meals: MealPrep[], filters: MealPrepFilters): MealPrep[] {
+  return meals.filter((meal) => matchesMealFilters(meal, filters));
+}
+
+export function pickMealPrep(
+  meals: MealPrep[],
+  filters: MealPrepFilters,
+  excludeId?: string,
+  purchasedIds?: readonly string[],
+): MealPrep | null {
+  const pool = filterMealPreps(meals, filters);
+  if (purchasedIds) {
+    const unbought = pool.filter(
+      (meal) => !purchasedIds.includes(meal.id) && meal.id !== excludeId,
+    );
+    if (unbought.length > 0) return pickFrom(unbought);
+  }
+  return pickFrom(pool, excludeId);
+}
+
+function pickFrom<T extends { id: string }>(pool: T[], excludeId?: string): T | null {
+  if (pool.length === 0) return null;
+  if (pool.length === 1) return pool[0] ?? null;
+
+  const withoutLast = excludeId ? pool.filter((item) => item.id !== excludeId) : pool;
   const choices = withoutLast.length > 0 ? withoutLast : pool;
   const index = Math.floor(Math.random() * choices.length);
   return choices[index] ?? null;
