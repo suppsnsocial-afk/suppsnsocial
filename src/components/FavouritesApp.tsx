@@ -27,8 +27,8 @@ type FavouritesAppProps = {
 
 export function FavouritesApp({ config }: FavouritesAppProps) {
   const { ids, toggle, isSaved, count } = useFavourites();
-  const { unlocked } = useUnlock();
-  const { isPurchased } = usePurchasedMeals();
+  const { unlocked, ready: workoutsReady } = useUnlock();
+  const { isPurchased, ready: mealsReady } = usePurchasedMeals();
   const notice = useCheckoutNotice();
   const checkout = useCheckoutActions();
   const [openId, setOpenId] = useState<string | null>(null);
@@ -80,7 +80,9 @@ export function FavouritesApp({ config }: FavouritesAppProps) {
               ← All saved
             </button>
             {openItem.kind === "workout" ? (
-              unlocked ? (
+              !workoutsReady ? (
+                <p className="text-center text-sm font-semibold text-lime">Checking your access…</p>
+              ) : unlocked ? (
                 <WorkoutCard
                   workout={openItem.item}
                   saved={isSaved(openItem.item.id)}
@@ -108,11 +110,11 @@ export function FavouritesApp({ config }: FavouritesAppProps) {
                   toggle(openItem.item.id);
                   setOpenId(null);
                 }}
-                locked={!isPurchased(openItem.item.id)}
+                locked={!mealsReady || !isPurchased(openItem.item.id)}
                 priceLabel={config.mealPriceLabel}
                 stripeConfigured={config.stripeConfigured}
                 demoUnlockAvailable={config.demoUnlockAvailable}
-                unlocking={checkout.paying || notice.verifyingMeal}
+                unlocking={checkout.paying || notice.verifyingMeal || !mealsReady}
                 unlockError={notice.error ?? checkout.error}
                 cancelled={notice.cancelledMeal}
                 onUnlock={() => void checkout.startMealCheckout(openItem.item.id)}

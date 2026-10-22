@@ -20,7 +20,7 @@ type WorkoutRollProps = {
 };
 
 export function WorkoutRoll({ config }: WorkoutRollProps) {
-  const { unlocked } = useUnlock();
+  const { unlocked, ready } = useUnlock();
   const notice = useCheckoutNotice();
   const checkout = useCheckoutActions();
   const { filters, setFilters } = useFilters();
@@ -62,7 +62,9 @@ export function WorkoutRoll({ config }: WorkoutRollProps) {
         </p>
       </section>
 
-      {unlocked ? (
+      {!ready ? (
+        <p className="text-center text-sm font-semibold text-lime">Checking your access…</p>
+      ) : unlocked ? (
         <>
           <button
             type="button"

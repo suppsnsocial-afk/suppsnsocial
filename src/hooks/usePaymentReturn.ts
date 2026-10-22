@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { persistPurchasedMeal, saveAppMode, saveLastMealId } from "@/lib/storage";
+import { applyUnlockPayload, type UnlockPayload } from "@/lib/entitlement-client";
+import { saveAppMode, saveLastMealId } from "@/lib/storage";
 import { useUnlock } from "./useUnlock";
 
 export function usePaymentReturn() {
-  const { unlocked, persistUnlock: persistWorkoutUnlock } = useUnlock();
+  const { unlocked } = useUnlock();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -25,6 +26,12 @@ export function usePaymentReturn() {
   const verifying = verifyingWorkout || verifyingMeal;
 
   useEffect(() => {
+    if (workoutSessionId && unlocked) {
+      router.replace(pathname);
+    }
+  }, [workoutSessionId, unlocked, router, pathname]);
+
+  useEffect(() => {
     if (!workoutSessionId || unlocked || workoutSessionId === failedSession || mealSessionId) {
       return;
     }
@@ -38,15 +45,11 @@ export function usePaymentReturn() {
       signal: controller.signal,
     })
       .then(async (response) => {
-        const data = (await response.json()) as {
-          unlocked?: boolean;
-          product?: string;
-          error?: string;
-        };
+        const data = (await response.json()) as UnlockPayload;
         if (!response.ok || !data.unlocked || data.product === "meal") {
           throw new Error(data.error ?? "Payment could not be confirmed.");
         }
-        persistWorkoutUnlock();
+        applyUnlockPayload(data);
         router.replace(pathname);
       })
       .catch((caught: unknown) => {
@@ -61,7 +64,6 @@ export function usePaymentReturn() {
     mealSessionId,
     unlocked,
     failedSession,
-    persistWorkoutUnlock,
     router,
     pathname,
   ]);
@@ -83,16 +85,11 @@ export function usePaymentReturn() {
       signal: controller.signal,
     })
       .then(async (response) => {
-        const data = (await response.json()) as {
-          unlocked?: boolean;
-          product?: string;
-          mealId?: string;
-          error?: string;
-        };
+        const data = (await response.json()) as UnlockPayload;
         if (!response.ok || !data.unlocked || data.product !== "meal" || !data.mealId) {
           throw new Error(data.error ?? "Payment could not be confirmed.");
         }
-        persistPurchasedMeal(data.mealId);
+        applyUnlockPayload(data);
         saveLastMealId(data.mealId);
         saveAppMode("meal");
         router.replace(pathname);
