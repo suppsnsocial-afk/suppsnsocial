@@ -1,14 +1,23 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
-import { getUnlockServerSnapshot, getUnlockSnapshot, persistUnlock, subscribeToStorage } from "@/lib/storage";
+import { useEffect, useSyncExternalStore } from "react";
+import {
+  ensureEntitlementsLoaded,
+  getEntitlementClientSnapshot,
+  getEntitlementServerSnapshot,
+  subscribeEntitlements,
+} from "@/lib/entitlement-client";
 
 export function useUnlock() {
-  const unlocked = useSyncExternalStore(
-    subscribeToStorage,
-    getUnlockSnapshot,
-    getUnlockServerSnapshot,
+  const view = useSyncExternalStore(
+    subscribeEntitlements,
+    getEntitlementClientSnapshot,
+    getEntitlementServerSnapshot,
   );
 
-  return { unlocked, persistUnlock };
+  useEffect(() => {
+    void ensureEntitlementsLoaded();
+  }, []);
+
+  return { unlocked: view.workoutUnlocked, ready: view.ready };
 }

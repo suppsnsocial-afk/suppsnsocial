@@ -1,21 +1,25 @@
 "use client";
 
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 import {
-  getPurchasedMealServerSnapshot,
-  getPurchasedMealSnapshot,
-  persistPurchasedMeal,
-  subscribeToStorage,
-} from "@/lib/storage";
+  ensureEntitlementsLoaded,
+  getEntitlementClientSnapshot,
+  getEntitlementServerSnapshot,
+  subscribeEntitlements,
+} from "@/lib/entitlement-client";
 
 export function usePurchasedMeals() {
-  const ids = useSyncExternalStore(
-    subscribeToStorage,
-    getPurchasedMealSnapshot,
-    getPurchasedMealServerSnapshot,
+  const view = useSyncExternalStore(
+    subscribeEntitlements,
+    getEntitlementClientSnapshot,
+    getEntitlementServerSnapshot,
   );
 
-  const isPurchased = useCallback((id: string) => ids.includes(id), [ids]);
+  useEffect(() => {
+    void ensureEntitlementsLoaded();
+  }, []);
 
-  return { ids, isPurchased, persistPurchasedMeal, count: ids.length };
+  const isPurchased = useCallback((id: string) => view.mealIds.includes(id), [view.mealIds]);
+
+  return { ids: view.mealIds, isPurchased, count: view.mealIds.length, ready: view.ready };
 }

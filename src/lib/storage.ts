@@ -1,10 +1,4 @@
 import {
-  UNLOCK_COOKIE,
-  UNLOCK_COOKIE_MAX_AGE,
-  UNLOCK_STORAGE_KEY,
-  UNLOCK_VALUE,
-} from "./unlock";
-import {
   APP_MODES,
   DURATION_BANDS,
   EMPTY_FILTERS,
@@ -21,7 +15,6 @@ import {
 } from "./types";
 
 export const FAVOURITES_KEY = "todays-session:favourites";
-export const PURCHASED_MEALS_KEY = "todays-session:purchased-meals";
 export const FILTERS_KEY = "todays-session:filters";
 export const MEAL_FILTERS_KEY = "todays-session:meal-filters";
 export const LAST_WORKOUT_KEY = "todays-session:last";
@@ -241,61 +234,3 @@ export function getAppModeServerSnapshot(): AppMode {
   return "workout";
 }
 
-function cookieIsUnlocked(): boolean {
-  return document.cookie.split("; ").some((part) => {
-    const [name, value] = part.split("=");
-    return name === UNLOCK_COOKIE && value === UNLOCK_VALUE;
-  });
-}
-
-function writeUnlockCookie(): void {
-  document.cookie = [
-    `${UNLOCK_COOKIE}=${UNLOCK_VALUE}`,
-    "Path=/",
-    `Max-Age=${UNLOCK_COOKIE_MAX_AGE}`,
-    "SameSite=Lax",
-  ].join("; ");
-}
-
-export function getUnlockSnapshot(): boolean {
-  const stored = window.localStorage.getItem(UNLOCK_STORAGE_KEY) === UNLOCK_VALUE;
-  return stored || cookieIsUnlocked();
-}
-
-export function getUnlockServerSnapshot(): boolean {
-  return false;
-}
-
-export function persistUnlock(): void {
-  window.localStorage.setItem(UNLOCK_STORAGE_KEY, UNLOCK_VALUE);
-  writeUnlockCookie();
-  notifyStorage();
-}
-
-let purchasedMealCacheRaw: string | null = null;
-let purchasedMealCache: string[] = [];
-
-export function getPurchasedMealSnapshot(): string[] {
-  const raw = window.localStorage.getItem(PURCHASED_MEALS_KEY);
-  if (raw === purchasedMealCacheRaw) return purchasedMealCache;
-  purchasedMealCacheRaw = raw;
-  purchasedMealCache = parseFavouriteIds(raw);
-  return purchasedMealCache;
-}
-
-export function getPurchasedMealServerSnapshot(): string[] {
-  return EMPTY_FAVOURITES;
-}
-
-export function savePurchasedMealIds(ids: string[]): void {
-  window.localStorage.setItem(PURCHASED_MEALS_KEY, JSON.stringify(ids));
-  purchasedMealCacheRaw = JSON.stringify(ids);
-  purchasedMealCache = ids;
-  notifyStorage();
-}
-
-export function persistPurchasedMeal(id: string): void {
-  const current = getPurchasedMealSnapshot();
-  if (current.includes(id)) return;
-  savePurchasedMealIds([id, ...current]);
-}

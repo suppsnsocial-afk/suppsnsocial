@@ -1,18 +1,37 @@
 import Stripe from "stripe";
 import {
   MEAL_PRICE_LABEL,
-  MEAL_PRODUCT,
   UNLOCK_PRICE_LABEL,
-  WORKOUT_PRODUCT,
   type UnlockConfig,
 } from "./unlock";
 
-export function isDemoUnlockEnabled(): boolean {
-  return process.env.NODE_ENV !== "production" && process.env.DEMO_UNLOCK === "true";
+const TEST_SECRET_PREFIXES = ["sk_test_", "rk_test_"] as const;
+const DEV_ORIGIN = "http://localhost:3000";
+
+let stripeClient: { key: string; client: Stripe } | null = null;
+
+export function isDemoUnlockEnabled(env: NodeJS.ProcessEnv = process.env): boolean {
+  return env.NODE_ENV !== "production" && env.DEMO_UNLOCK === "true";
 }
 
-export function isStripeConfigured(): boolean {
-  return Boolean(process.env.STRIPE_SECRET_KEY && process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+export function isTestStripeSecret(key: string): boolean {
+  return TEST_SECRET_PREFIXES.some((prefix) => key.startsWith(prefix));
+}
+
+export function isTestStripePublishable(key: string): boolean {
+  return key.startsWith("pk_test_");
+}
+
+export function assertTestStripeSecret(key: string): void {
+  if (!isTestStripeSecret(key)) {
+    throw new Error("Refusing to use a Stripe secret key that is not a test key.");
+  }
+}
+
+export function isStripeConfigured(env: NodeJS.ProcessEnv = process.env): boolean {
+  const secret = env.STRIPE_SECRET_KEY?.trim() ?? "";
+  const publishable = env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.trim() ?? "";
+  return Boolean(secret && publishable && isTestStripeSecret(secret) && isTestStripePublishable(publishable));
 }
 
 export function getUnlockConfig(): UnlockConfig {
@@ -24,35 +43,49 @@ export function getUnlockConfig(): UnlockConfig {
   };
 }
 
-export function getStripe(): Stripe {
-  const key = process.env.STRIPE_SECRET_KEY;
+export function getStripe(env: NodeJS.ProcessEnv = process.env): Stripe {
+  const key = env.STRIPE_SECRET_KEY?.trim() ?? "";
   if (!key) {
     throw new Error("STRIPE_SECRET_KEY is not set");
   }
-  return new Stripe(key);
+  assertTestStripeSecret(key);
+  if (!stripeClient || stripeClient.key !== key) {
+    stripeClient = { key, client: new Stripe(key) };
+  }
+  return stripeClient.client;
 }
 
-export function appOrigin(request: Request): string {
-  const configured = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "");
-  if (configured) return configured;
-
-  const url = new URL(request.url);
-  const proto = request.headers.get("x-forwarded-proto") ?? url.protocol.replace(":", "");
-  const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? url.host;
-  return `${proto}://${host}`;
+/**
+ * Checkout redirect origin. Production must set NEXT_PUBLIC_APP_URL.
+ * Host and X-Forwarded-Host are never read.
+ */
+export function appOrigin(env: NodeJS.ProcessEnv = process.env): string {
+  const configured = env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/$/, "");
+  if (configured) {
+    let url: URL;
+    try {
+      url = new URL(configured);
+    } catch {
+      throw new Error("NEXT_PUBLIC_APP_URL must be an absolute http(s) URL.");
+    }
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+      throw new Error("NEXT_PUBLIC_APP_URL must be an absolute http(s) URL.");
+    }
+    if (url.username || url.password) {
+      throw new Error("NEXT_PUBLIC_APP_URL must not include credentials.");
+    }
+    return url.origin;
+  }
+  if (env.NODE_ENV === "production") {
+    throw new Error("NEXT_PUBLIC_APP_URL is required in production.");
+  }
+  return DEV_ORIGIN;
 }
 
-export function isCheckoutPaid(session: Stripe.Checkout.Session): boolean {
-  return session.payment_status === "paid" || session.status === "complete";
+export function isCheckoutPaid(session: { payment_status?: string | null }): boolean {
+  return session.payment_status === "paid";
 }
 
-export function isPaidCheckoutSession(session: Stripe.Checkout.Session): boolean {
-  return session.metadata?.product === WORKOUT_PRODUCT && isCheckoutPaid(session);
-}
-
-export function paidMealIdFromSession(session: Stripe.Checkout.Session): string | null {
-  const mealId = session.metadata?.mealId?.trim();
-  if (!mealId) return null;
-  if (session.metadata?.product !== MEAL_PRODUCT || !isCheckoutPaid(session)) return null;
-  return mealId;
+export function resetStripeClientForTests(): void {
+  stripeClient = null;
 }

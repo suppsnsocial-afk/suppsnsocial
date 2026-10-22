@@ -1,16 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { persistPurchasedMeal } from "@/lib/storage";
-import { useUnlock } from "./useUnlock";
+import { applyUnlockPayload, type UnlockPayload } from "@/lib/entitlement-client";
 
-async function readError(response: Response, fallback: string): Promise<string> {
-  const data = (await response.json()) as { url?: string; unlocked?: boolean; error?: string };
-  return data.error ?? fallback;
+async function readPayload(response: Response): Promise<UnlockPayload> {
+  return (await response.json()) as UnlockPayload;
+}
+
+function idempotencyKey(prefix: string): string {
+  return `${prefix}_${crypto.randomUUID()}`;
 }
 
 export function useCheckoutActions() {
-  const { persistUnlock } = useUnlock();
   const [paying, setPaying] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,7 +22,7 @@ export function useCheckoutActions() {
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ product: "workout" }),
+        body: JSON.stringify({ product: "workout", idempotencyKey: idempotencyKey("workout") }),
       });
       const data = (await response.json()) as { url?: string; error?: string };
       if (!response.ok || !data.url) {
@@ -43,10 +44,11 @@ export function useCheckoutActions() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ demo: true }),
       });
-      if (!response.ok) {
-        throw new Error(await readError(response, "Demo unlock is not available."));
+      const data = await readPayload(response);
+      if (!response.ok || !data.unlocked) {
+        throw new Error(data.error ?? "Demo unlock is not available.");
       }
-      persistUnlock();
+      applyUnlockPayload(data);
     } catch (caught: unknown) {
       setError(caught instanceof Error ? caught.message : "Demo unlock is not available.");
     } finally {
@@ -61,7 +63,11 @@ export function useCheckoutActions() {
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ product: "meal", mealId }),
+        body: JSON.stringify({
+          product: "meal",
+          mealId,
+          idempotencyKey: idempotencyKey(`meal_${mealId}`),
+        }),
       });
       const data = (await response.json()) as { url?: string; error?: string };
       if (!response.ok || !data.url) {
@@ -83,15 +89,11 @@ export function useCheckoutActions() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ demo: true, mealId }),
       });
-      const data = (await response.json()) as {
-        unlocked?: boolean;
-        mealId?: string;
-        error?: string;
-      };
-      if (!response.ok || !data.unlocked || !data.mealId) {
+      const data = await readPayload(response);
+      if (!response.ok || !data.unlocked || data.product !== "meal" || !data.mealId) {
         throw new Error(data.error ?? "Demo unlock is not available.");
       }
-      persistPurchasedMeal(data.mealId);
+      applyUnlockPayload(data);
     } catch (caught: unknown) {
       setError(caught instanceof Error ? caught.message : "Demo unlock is not available.");
     } finally {

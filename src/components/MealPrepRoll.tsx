@@ -22,7 +22,7 @@ export function MealPrepRoll({ config }: MealPrepRollProps) {
   const { filters, setFilters } = useMealFilters();
   const { toggle, isSaved } = useFavourites();
   const { lastId, setLastId } = useLastMeal();
-  const { ids: purchasedIds, isPurchased } = usePurchasedMeals();
+  const { ids: purchasedIds, isPurchased, ready } = usePurchasedMeals();
   const notice = useCheckoutNotice();
   const checkout = useCheckoutActions();
   const restored = mealPreps.find((item) => item.id === lastId) ?? null;
@@ -30,7 +30,7 @@ export function MealPrepRoll({ config }: MealPrepRollProps) {
   const shown = meal ?? restored;
   const [rolling, setRolling] = useState(false);
   const [empty, setEmpty] = useState(false);
-  const locked = Boolean(shown && !isPurchased(shown.id));
+  const locked = Boolean(shown && (!ready || !isPurchased(shown.id)));
 
   const matchCount = useMemo(() => filterMealPreps(mealPreps, filters).length, [filters]);
 
@@ -89,7 +89,7 @@ export function MealPrepRoll({ config }: MealPrepRollProps) {
           priceLabel={config.mealPriceLabel}
           stripeConfigured={config.stripeConfigured}
           demoUnlockAvailable={config.demoUnlockAvailable}
-          unlocking={checkout.paying || notice.verifyingMeal}
+          unlocking={checkout.paying || notice.verifyingMeal || !ready}
           unlockError={notice.error ?? checkout.error}
           cancelled={notice.cancelledMeal}
           onUnlock={() => void checkout.startMealCheckout(shown.id)}
